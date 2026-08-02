@@ -12,6 +12,7 @@ const validEnv = {
   APP_ENV: "development",
   NODE_ENV: "development",
   NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+  DATABASE_URL: "postgresql://dep:secret@localhost:5432/dep?schema=public",
 };
 
 describe("parseServerEnv", () => {
@@ -32,6 +33,7 @@ describe("parseServerEnv", () => {
 
     expect(message).toMatch(/APP_ENV/);
     expect(message).toMatch(/NEXT_PUBLIC_APP_URL/);
+    expect(message).toMatch(/DATABASE_URL/);
   });
 
   it("rejects an unrecognised APP_ENV rather than falling back silently", () => {
@@ -44,6 +46,44 @@ describe("parseServerEnv", () => {
     expect(() =>
       parseServerEnv({ ...validEnv, NEXT_PUBLIC_APP_URL: "localhost:3000" }),
     ).toThrowError(/NEXT_PUBLIC_APP_URL/);
+  });
+
+  describe("database", () => {
+    it("exposes the connection string", () => {
+      expect(parseServerEnv(validEnv).databaseUrl).toBe(
+        "postgresql://dep:secret@localhost:5432/dep?schema=public",
+      );
+    });
+
+    it("accepts both postgres:// and postgresql:// schemes", () => {
+      const short = parseServerEnv({
+        ...validEnv,
+        DATABASE_URL: "postgres://dep:secret@localhost:5432/dep",
+      });
+
+      expect(short.databaseUrl).toBe(
+        "postgres://dep:secret@localhost:5432/dep",
+      );
+    });
+
+    it("rejects a connection string for a different database engine", () => {
+      expect(() =>
+        parseServerEnv({
+          ...validEnv,
+          DATABASE_URL: "mysql://dep:secret@localhost:3306/dep",
+        }),
+      ).toThrowError(/DATABASE_URL/);
+    });
+
+    it("rejects a value that is not a connection string at all", () => {
+      expect(() =>
+        parseServerEnv({ ...validEnv, DATABASE_URL: "localhost:5432" }),
+      ).toThrowError(/DATABASE_URL/);
+    });
+
+    it("keeps the connection string out of the client configuration", () => {
+      expect(parseClientEnv(validEnv)).not.toHaveProperty("databaseUrl");
+    });
   });
 
   describe("deployment environment", () => {
@@ -134,6 +174,10 @@ describe("serverEnv", () => {
   it("reads process.env and memoises the validated result", () => {
     vi.stubEnv("APP_ENV", "staging");
     vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://staging.example.com");
+    vi.stubEnv(
+      "DATABASE_URL",
+      "postgresql://dep:secret@db.internal:5432/dep?schema=public",
+    );
 
     const first = serverEnv();
 
