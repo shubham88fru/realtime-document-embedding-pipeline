@@ -19,13 +19,16 @@ const DEFAULT_MAX_PROCESSING_CONCURRENCY = 10;
  * `z.url()` accepts "localhost:3000" because the WHATWG parser reads it as the
  * "localhost:" protocol, so the scheme has to be checked explicitly.
  */
-function isAbsoluteHttpUrl(value: string): boolean {
+function hasScheme(value: string, schemes: readonly string[]): boolean {
   try {
-    const { protocol } = new URL(value);
-    return protocol === "http:" || protocol === "https:";
+    return schemes.includes(new URL(value).protocol);
   } catch {
     return false;
   }
+}
+
+function isAbsoluteHttpUrl(value: string): boolean {
+  return hasScheme(value, ["http:", "https:"]);
 }
 
 /**
@@ -43,10 +46,24 @@ function positiveInteger(defaultValue: number) {
     .refine((value) => value > 0, { message: "must be greater than zero" });
 }
 
+/**
+ * Postgres connection strings use either scheme interchangeably; anything else
+ * means the wrong engine, which Prisma would only complain about at connect
+ * time.
+ */
+function isPostgresConnectionString(value: string): boolean {
+  return hasScheme(value, ["postgres:", "postgresql:"]);
+}
+
 const serverEnvSchema = z.object({
   APP_ENV: z.enum(APP_ENVS),
   NEXT_PUBLIC_APP_URL: z.string().refine(isAbsoluteHttpUrl, {
     message: "must be an absolute http(s) URL, e.g. http://localhost:3000",
+  }),
+  DATABASE_URL: z.string().refine(isPostgresConnectionString, {
+    message:
+      "must be a postgres:// or postgresql:// connection string, " +
+      "e.g. postgresql://user:password@localhost:5432/dbname?schema=public",
   }),
   MAX_UPLOAD_FILES: positiveInteger(DEFAULT_MAX_UPLOAD_FILES),
   MAX_FILE_SIZE_MB: positiveInteger(DEFAULT_MAX_FILE_SIZE_MB),
@@ -77,6 +94,7 @@ export type ServerEnv = {
   isStaging: boolean;
   isProduction: boolean;
   publicAppUrl: string;
+  databaseUrl: string;
   limits: PipelineLimits;
 };
 
@@ -112,6 +130,7 @@ export function parseServerEnv(
     isStaging: parsed.APP_ENV === "staging",
     isProduction: parsed.APP_ENV === "production",
     publicAppUrl: parsed.NEXT_PUBLIC_APP_URL,
+    databaseUrl: parsed.DATABASE_URL,
     limits: {
       maxUploadFiles: parsed.MAX_UPLOAD_FILES,
       maxFileSizeBytes: parsed.MAX_FILE_SIZE_MB * BYTES_PER_MB,

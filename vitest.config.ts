@@ -15,6 +15,14 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
-    exclude: ["node_modules", ".next", "e2e"],
+    // Integration tests need a live Postgres and run from
+    // vitest.integration.config.ts via `npm run test:integration`.
+    exclude: [
+      "node_modules",
+      ".next",
+      "e2e",
+      "src/**/*.integration.test.ts",
+      "src/generated/**",
+    ],
   },
 });

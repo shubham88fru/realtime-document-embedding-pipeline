@@ -15,21 +15,37 @@ Work is tracked as numbered tickets under
 
 ## Status
 
-Ticket 01 (project foundation) is complete. The application scaffold, validated
-environment configuration, UI component library and test harness are in place.
-Authentication, uploads, the queue and the embedding pipeline itself arrive in
-tickets 02–12.
+Tickets 01 (project foundation) and 02 (database schema) are complete. The
+application scaffold, validated environment configuration, UI component library,
+test harness and the Postgres schema are in place. Authentication, uploads, the
+queue and the embedding pipeline itself arrive in tickets 03–12.
 
 ## Prerequisites
 
 - Node.js 20 or newer (developed against 24)
 - npm 10 or newer
+- Docker, for the local Postgres with pgvector
 
 ## Setup
 
 ```bash
 npm install
 cp .env.example .env.local
+
+# Postgres 17 with pgvector, matching what the app expects
+docker run -d --name dep-postgres \
+  -e POSTGRES_USER=dep \
+  -e POSTGRES_PASSWORD=dep_local_dev \
+  -e POSTGRES_DB=document_embedding_pipeline \
+  -p 5432:5432 \
+  pgvector/pgvector:pg17
+
+# Separate database for integration tests, which truncate between cases
+docker exec dep-postgres \
+  createdb -U dep document_embedding_pipeline_test
+
+npm run db:migrate     # apply migrations
+npm run db:seed        # optional: a dev user and one document per status
 npm run dev
 ```
 
@@ -42,15 +58,21 @@ than failing later at the point of use.
 
 ## Commands
 
-| Command             | Purpose                                    |
-| ------------------- | ------------------------------------------ |
-| `npm run dev`       | Development server with hot reload         |
-| `npm run build`     | Production build                           |
-| `npm start`         | Serve a production build                   |
-| `npm test`          | Run the test suite once                    |
-| `npm run test:watch`| Re-run tests on change                     |
-| `npm run typecheck` | Type-check without emitting                |
-| `npm run lint`      | ESLint                                     |
+| Command                  | Purpose                                     |
+| ------------------------ | ------------------------------------------- |
+| `npm run dev`            | Development server with hot reload          |
+| `npm run build`          | Production build                            |
+| `npm start`              | Serve a production build                    |
+| `npm test`               | Unit tests, no database needed              |
+| `npm run test:watch`     | Re-run unit tests on change                 |
+| `npm run test:integration`| Tests against a real Postgres              |
+| `npm run typecheck`      | Type-check without emitting                 |
+| `npm run lint`           | ESLint                                      |
+| `npm run db:migrate`     | Create and apply a migration (development)  |
+| `npm run db:deploy`      | Apply existing migrations (deployment)      |
+| `npm run db:generate`    | Regenerate the Prisma client                |
+| `npm run db:seed`        | Load development data                       |
+| `npm run db:studio`      | Browse the database                         |
 
 ## Configuration
 

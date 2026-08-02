@@ -1,0 +1,91 @@
+// Schema for the document embedding pipeline.
+// See .scratch/document-embedding-pipeline/spec.md for the data model this
+// implements, and prisma.config.ts for how the connection URL is resolved.
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+/// Lifecycle of a document as it moves through the pipeline. Mirrors
+/// DOCUMENT_STATUSES in src/types/document.ts — keep the two in step.
+enum DocumentStatus {
+  uploaded
+  processing
+  complete
+  error
+
+  @@map("document_status")
+}
+
+/// A person authenticated through Google OAuth (ticket 03). Identity lives with
+/// the provider; this table stores only what the application needs to display
+/// and to scope documents by owner.
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  name      String?
+  photoUrl  String?  @map("photo_url")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  documents Document[]
+
+  @@map("users")
+}
+
+/// An uploaded file and its progress through the pipeline. `progressPercentage`
+/// is constrained to 0..100 by a check constraint added in the initial
+/// migration; Prisma has no schema-level syntax for that.
+model Document {
+  id                 String         @id @default(uuid()) @db.Uuid
+  userId             String         @map("user_id") @db.Uuid
+  /// Display name as uploaded. Not in the ticket's column list, but without it
+  /// there is nothing to identify a file by in the UI.
+  fileName           String         @map("file_name")
+  status             DocumentStatus @default(uploaded)
+  progressPercentage Int            @default(0) @map("progress_percentage")
+  errorMessage       String?        @map("error_message")
+  fileUrl            String?        @map("file_url")
+  s3Key              String         @unique @map("s3_key")
+  createdAt          DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  embeddings Embedding[]
+
+  /// The document list is read per user, newest first.
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status])
+  @@map("documents")
+}
+
+/// One embedded chunk of a document.
+///
+/// `vector` is 1536-dimensional to match OpenAI text-embedding-3-small, the
+/// model named in the spec. Prisma cannot read or write `Unsupported` columns
+/// through the generated client, so writes go through raw SQL.
+///
+/// There is deliberately no vector index: similarity search is out of scope for
+/// this project, and an unused HNSW index would cost write throughput for
+/// nothing. Add one alongside the first query that needs it.
+model Embedding {
+  id         String   @id @default(uuid()) @db.Uuid
+  documentId String   @map("document_id") @db.Uuid
+  chunkIndex Int      @map("chunk_index")
+  content    String
+  vector     Unsupported("vector(1536)")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  /// A chunk is written once per document; a retry must not duplicate it.
+  @@unique([documentId, chunkIndex])
+  @@map("embeddings")
+}
