@@ -12,6 +12,9 @@ const validEnv = {
   APP_ENV: "development",
   NODE_ENV: "development",
   NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+  AUTH_SECRET: "test-auth-secret-with-at-least-32-characters",
+  AUTH_GOOGLE_ID: "google-client-id",
+  AUTH_GOOGLE_SECRET: "google-client-secret",
   DATABASE_URL: "postgresql://dep:secret@localhost:5432/dep?schema=public",
 };
 
@@ -34,6 +37,9 @@ describe("parseServerEnv", () => {
     expect(message).toMatch(/APP_ENV/);
     expect(message).toMatch(/NEXT_PUBLIC_APP_URL/);
     expect(message).toMatch(/DATABASE_URL/);
+    expect(message).toMatch(/AUTH_SECRET/);
+    expect(message).toMatch(/AUTH_GOOGLE_ID/);
+    expect(message).toMatch(/AUTH_GOOGLE_SECRET/);
   });
 
   it("rejects an unrecognised APP_ENV rather than falling back silently", () => {
@@ -178,6 +184,10 @@ describe("serverEnv", () => {
       "DATABASE_URL",
       "postgresql://dep:secret@db.internal:5432/dep?schema=public",
     );
+
+    vi.stubEnv("AUTH_SECRET", "test-auth-secret-with-at-least-32-characters");
+    vi.stubEnv("AUTH_GOOGLE_ID", "google-client-id");
+    vi.stubEnv("AUTH_GOOGLE_SECRET", "google-client-secret");
 
     const first = serverEnv();
 

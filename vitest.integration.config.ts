@@ -29,6 +29,9 @@ export default defineConfig({
       DATABASE_URL: testDatabaseUrl,
       APP_ENV: "development",
       NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+      AUTH_SECRET: "test-auth-secret-with-at-least-32-characters",
+      AUTH_GOOGLE_ID: "google-client-id",
+      AUTH_GOOGLE_SECRET: "google-client-secret",
     },
     // Every file shares one database and truncates between cases, so running
     // files in parallel would have them deleting each other's rows.

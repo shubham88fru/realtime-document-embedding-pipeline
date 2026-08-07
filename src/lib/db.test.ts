@@ -19,6 +19,9 @@ beforeEach(() => {
   vi.stubEnv("APP_ENV", "development");
   vi.stubEnv("NEXT_PUBLIC_APP_URL", "http://localhost:3000");
   vi.stubEnv("DATABASE_URL", CONNECTION_STRING);
+  vi.stubEnv("AUTH_SECRET", "test-auth-secret-with-at-least-32-characters");
+  vi.stubEnv("AUTH_GOOGLE_ID", "google-client-id");
+  vi.stubEnv("AUTH_GOOGLE_SECRET", "google-client-secret");
 });
 
 afterEach(() => {
