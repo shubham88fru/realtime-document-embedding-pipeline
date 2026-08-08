@@ -83,3 +83,8 @@ committed.
    framework-owned static/image paths and the favicon are now excluded.
 6. The README tech-stack footer still listed authentication and PostgreSQL as
    planned work. It now distinguishes completed from future infrastructure.
+
+### Visual follow-up
+
+Ticket 13 owns the visual redesign of the sign-in page and authenticated shell.
+It must preserve the authentication behavior and test seams completed here.
