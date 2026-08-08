@@ -15,10 +15,9 @@ Work is tracked as numbered tickets under
 
 ## Status
 
-Tickets 01 (project foundation) and 02 (database schema) are complete. The
-application scaffold, validated environment configuration, UI component library,
-test harness and the Postgres schema are in place. Authentication, uploads, the
-queue and the embedding pipeline itself arrive in tickets 03–12.
+Tickets 01–03 are complete. The application foundation, Postgres schema and
+Google authentication are in place. Uploads, the queue and the embedding
+pipeline itself arrive in tickets 04–12.
 
 ## Prerequisites
 
@@ -31,6 +30,10 @@ queue and the embedding pipeline itself arrive in tickets 03–12.
 ```bash
 npm install
 cp .env.example .env.local
+
+# Fill AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET from a Google OAuth 2.0 web client.
+# Generate a local session-encryption secret:
+openssl rand -base64 32
 
 # Postgres 17 with pgvector, matching what the app expects
 docker run -d --name dep-postgres \
@@ -51,10 +54,30 @@ npm run dev
 
 The app runs at http://localhost:3000.
 
-`.env.local` works as copied — every variable it needs has either a value in the
-example or a sensible default. Configuration is validated at startup, so a
-missing or malformed variable stops the boot with a message naming it rather
-than failing later at the point of use.
+Create an OAuth 2.0 **Web application** client in Google Cloud Console and add
+`http://localhost:3000/api/auth/callback/google` as an authorized redirect URI.
+Put the generated client ID, client secret, and the `openssl` output in
+`.env.local`. For staging and production, use each deployment's equivalent
+HTTPS callback URL.
+
+Configuration is validated at startup, so a missing or malformed variable stops
+the boot with a message naming it rather than failing later at the point of use.
+
+## Authentication
+
+The sign-in page is public; application routes are protected by
+[`src/proxy.ts`](src/proxy.ts). Auth.js stores an encrypted JWT session in an
+HTTP-only cookie for 30 days and refreshes active sessions. On each verified
+Google sign-in, the profile is upserted by Google's stable subject into the
+`users` table, while name, email and photo are refreshed.
+
+The Google OAuth callback is:
+
+```text
+http://localhost:3000/api/auth/callback/google
+```
+
+Auth.js rejects Google profiles whose email is not verified.
 
 ## Commands
 
@@ -96,6 +119,8 @@ environment.
 ```
 src/
 ├── app/          Next.js App Router — routes, layouts, API handlers
+├── auth.ts       Auth.js callbacks, session projection and profile sync
+├── auth.config.ts Provider and route authorization policy
 ├── components/
 │   └── ui/       shadcn/ui primitives
 ├── lib/          Framework-agnostic utilities (env config, helpers)
@@ -125,15 +150,17 @@ with a docblock at the top of the file:
 ```bash
 npm test                    # everything
 npm test -- src/lib/env     # one file
+npm run test:integration    # migrations + database-backed seams
 ```
 
 ## Tech stack
 
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 ·
-shadcn/ui · Zod · Vitest
+shadcn/ui · Auth.js v5 with Google OAuth · PostgreSQL with pgvector · Zod ·
+Vitest
 
-Planned for later tickets: NextAuth v5 with Google OAuth, PostgreSQL with
-pgvector, AWS S3 + SQS + Lambda, OpenAI embeddings, OpenSearch, Socket.io.
+Planned for later tickets: AWS S3 + SQS + Lambda, OpenAI embeddings,
+OpenSearch, Socket.io.
 
 ## Troubleshooting
 

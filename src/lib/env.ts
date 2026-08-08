@@ -65,6 +65,11 @@ const serverEnvSchema = z.object({
       "must be a postgres:// or postgresql:// connection string, " +
       "e.g. postgresql://user:password@localhost:5432/dbname?schema=public",
   }),
+  AUTH_SECRET: z.string().min(32, {
+    message: "must be at least 32 characters; generate one with `npx auth secret`",
+  }),
+  AUTH_GOOGLE_ID: z.string().min(1, { message: "is required" }),
+  AUTH_GOOGLE_SECRET: z.string().min(1, { message: "is required" }),
   MAX_UPLOAD_FILES: positiveInteger(DEFAULT_MAX_UPLOAD_FILES),
   MAX_FILE_SIZE_MB: positiveInteger(DEFAULT_MAX_FILE_SIZE_MB),
   MAX_PROCESSING_CONCURRENCY: positiveInteger(
@@ -95,6 +100,11 @@ export type ServerEnv = {
   isProduction: boolean;
   publicAppUrl: string;
   databaseUrl: string;
+  auth: {
+    secret: string;
+    googleClientId: string;
+    googleClientSecret: string;
+  };
   limits: PipelineLimits;
 };
 
@@ -131,6 +141,11 @@ export function parseServerEnv(
     isProduction: parsed.APP_ENV === "production",
     publicAppUrl: parsed.NEXT_PUBLIC_APP_URL,
     databaseUrl: parsed.DATABASE_URL,
+    auth: {
+      secret: parsed.AUTH_SECRET,
+      googleClientId: parsed.AUTH_GOOGLE_ID,
+      googleClientSecret: parsed.AUTH_GOOGLE_SECRET,
+    },
     limits: {
       maxUploadFiles: parsed.MAX_UPLOAD_FILES,
       maxFileSizeBytes: parsed.MAX_FILE_SIZE_MB * BYTES_PER_MB,

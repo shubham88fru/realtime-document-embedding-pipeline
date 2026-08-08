@@ -20,19 +20,31 @@ const STATUS_STYLES: Record<(typeof DOCUMENT_STATUSES)[number], string> = {
 // that happened to be set at build time.
 export const dynamic = "force-dynamic";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
   const { appEnv, limits } = serverEnv();
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-6 p-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Document Embedding Pipeline
-        </h1>
-        <p className="text-muted-foreground">
-          Upload documents and convert them into vector embeddings, with
-          real-time progress.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Document Embedding Pipeline
+          </h1>
+          <p className="text-muted-foreground">
+            Upload documents and convert them into vector embeddings, with
+            real-time progress.
+          </p>
+        </div>
+        <AuthControls
+          user={session.user}
+          signInAction={signInWithGoogle}
+          signOutAction={signOutCurrentUser}
+        />
       </div>
 
       <Card>
@@ -84,3 +96,8 @@ export default function Home() {
     </main>
   );
 }
+import { redirect } from "next/navigation";
+
+import { signInWithGoogle, signOutCurrentUser } from "@/app/actions/auth";
+import { auth } from "@/auth";
+import { AuthControls } from "@/components/auth/auth-controls";
