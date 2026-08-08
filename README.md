@@ -15,9 +15,9 @@ Work is tracked as numbered tickets under
 
 ## Status
 
-Tickets 01–03 are complete. The application foundation, Postgres schema and
-Google authentication are in place. Uploads, the queue and the embedding
-pipeline itself arrive in tickets 04–12.
+Tickets 01–03 and 13 are complete. The application foundation, Postgres schema,
+Google authentication, and Cloudline design system are in place. Uploads, the
+queue and the embedding pipeline itself arrive in tickets 04–12.
 
 ## Prerequisites
 
@@ -78,6 +78,19 @@ http://localhost:3000/api/auth/callback/google
 ```
 
 Auth.js rejects Google profiles whose email is not verified.
+
+## Interface
+
+Cloudline is the application's original visual system. It uses a cloud-blue and
+blush atmospheric canvas, slate-blue ink, Manrope display typography, capsule
+actions, high-radius surfaces, and restrained depth. Tokens live in
+[`src/app/globals.css`](src/app/globals.css); shared state primitives live under
+[`src/components/ui`](src/components/ui), and the responsive authenticated shell
+is [`src/components/layout/app-shell.tsx`](src/components/layout/app-shell.tsx).
+
+The interface renders only persisted document states: `uploaded`, `processing`,
+`complete`, and `error`. Unknown processing progress is indeterminate; named
+internal phases are not inferred in the browser.
 
 ## Commands
 
@@ -156,8 +169,8 @@ npm run test:integration    # migrations + database-backed seams
 ## Tech stack
 
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 ·
-shadcn/ui · Auth.js v5 with Google OAuth · PostgreSQL with pgvector · Zod ·
-Vitest
+shadcn/ui · Manrope + Geist · Auth.js v5 with Google OAuth · PostgreSQL with
+pgvector · Zod · Vitest
 
 Planned for later tickets: AWS S3 + SQS + Lambda, OpenAI embeddings,
 OpenSearch, Socket.io.
