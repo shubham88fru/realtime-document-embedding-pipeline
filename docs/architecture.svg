@@ -1,0 +1,257 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="880" viewBox="0 0 1440 880" role="img" aria-labelledby="title description">
+  <title id="title">Document Embedding Pipeline architecture</title>
+  <desc id="description">Implemented Google authentication, Next.js upload API, PostgreSQL, and S3-compatible object storage are shown with solid cards. Planned SQS, Lambda processing, embedding provider, vector backend, Socket.io progress, and cold storage are shown with dashed cards.</desc>
+
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbfdfe"/>
+      <stop offset="0.48" stop-color="#f7fafc"/>
+      <stop offset="1" stop-color="#f3f8fb"/>
+    </linearGradient>
+    <radialGradient id="blueGlow" cx="0.8" cy="0.08" r="0.72">
+      <stop offset="0" stop-color="#c9e2f2" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#c9e2f2" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blushGlow" cx="0.06" cy="0.85" r="0.62">
+      <stop offset="0" stop-color="#f5dfe3" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#f5dfe3" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="implementedZone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.76"/>
+      <stop offset="1" stop-color="#eef6fa" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="plannedZone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffafa" stop-opacity="0.74"/>
+      <stop offset="1" stop-color="#f8eef1" stop-opacity="0.88"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#425568" flood-opacity="0.12"/>
+    </filter>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#425568" flood-opacity="0.09"/>
+    </filter>
+    <marker id="arrowSolid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4d708b"/>
+    </marker>
+    <marker id="arrowPlanned" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9a6d79"/>
+    </marker>
+    <style>
+      .ink { fill: #293a49; }
+      .muted { fill: #596d7d; }
+      .title { font-family: Manrope, Inter, ui-sans-serif, system-ui, sans-serif; font-size: 34px; font-weight: 500; letter-spacing: -0.8px; }
+      .subtitle { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 400; }
+      .zone-label { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; }
+      .node-title { font-family: Manrope, Inter, ui-sans-serif, system-ui, sans-serif; font-size: 18px; font-weight: 650; letter-spacing: -0.2px; }
+      .node-copy { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 12.5px; font-weight: 400; }
+      .pill { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 9px; font-weight: 750; letter-spacing: 1.1px; }
+      .edge-label { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 10px; font-weight: 650; }
+      .implemented-card { fill: #ffffff; stroke: #d8e3e9; stroke-width: 1.4; }
+      .planned-card { fill: #fffdfd; stroke: #cdaab3; stroke-width: 1.5; stroke-dasharray: 7 6; }
+      .solid-edge { fill: none; stroke: #4d708b; stroke-width: 2.2; marker-end: url(#arrowSolid); }
+      .planned-edge { fill: none; stroke: #9a6d79; stroke-width: 2; stroke-dasharray: 7 7; marker-end: url(#arrowPlanned); }
+      .icon-stroke { fill: none; stroke: #4d708b; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .planned-icon { fill: none; stroke: #9a6d79; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="880" fill="url(#canvas)"/>
+  <rect width="1440" height="880" fill="url(#blueGlow)"/>
+  <rect width="1440" height="880" fill="url(#blushGlow)"/>
+
+  <text x="54" y="62" class="title ink">Document Embedding Pipeline</text>
+  <text x="54" y="91" class="subtitle muted">Current upload architecture and the ticketed asynchronous processing path</text>
+
+  <g transform="translate(1060 48)">
+    <line x1="0" y1="11" x2="42" y2="11" class="solid-edge" marker-end="none"/>
+    <circle cx="48" cy="11" r="5" fill="#4f806b"/>
+    <text x="62" y="15" class="node-copy ink">Implemented</text>
+    <line x1="170" y1="11" x2="212" y2="11" class="planned-edge" marker-end="none"/>
+    <circle cx="218" cy="11" r="5" fill="#b27a89"/>
+    <text x="232" y="15" class="node-copy ink">Planned</text>
+  </g>
+
+  <rect x="38" y="130" width="848" height="690" rx="34" fill="url(#implementedZone)" stroke="#cbdde7" stroke-width="1.4"/>
+  <rect x="914" y="130" width="488" height="690" rx="34" fill="url(#plannedZone)" stroke="#d9bcc4" stroke-width="1.4" stroke-dasharray="9 8"/>
+  <text x="66" y="168" class="zone-label" fill="#4d708b">IMPLEMENTED NOW</text>
+  <text x="942" y="168" class="zone-label" fill="#9a6d79">PLANNED PIPELINE</text>
+
+  <!-- Browser -->
+  <g filter="url(#shadow)">
+    <rect x="72" y="218" width="224" height="146" rx="24" class="implemented-card"/>
+  </g>
+  <rect x="88" y="234" width="58" height="58" rx="18" fill="#eaf3f8"/>
+  <rect x="100" y="247" width="34" height="27" rx="4" class="icon-stroke"/>
+  <line x1="100" y1="254" x2="134" y2="254" class="icon-stroke"/>
+  <circle cx="106" cy="250.5" r="1.2" fill="#4d708b"/>
+  <text x="161" y="251" class="node-title ink">Cloudline UI</text>
+  <text x="161" y="273" class="node-copy muted">Next.js + React</text>
+  <text x="94" y="318" class="node-copy ink">Google sign-in • PDF selection</text>
+  <text x="94" y="340" class="node-copy ink">Per-file transfer and finalization</text>
+  <rect x="211" y="226" width="68" height="20" rx="10" fill="#e8f3ed"/>
+  <text x="224" y="240" class="pill" fill="#3e725d">CURRENT</text>
+
+  <!-- Google OAuth -->
+  <g filter="url(#softShadow)">
+    <rect x="72" y="438" width="224" height="118" rx="24" class="implemented-card"/>
+  </g>
+  <circle cx="117" cy="482" r="27" fill="#f7ecee"/>
+  <path d="M106 482a11 11 0 1 1 3.3 7.9" class="icon-stroke"/>
+  <path d="M117 482h12" class="icon-stroke"/>
+  <text x="161" y="475" class="node-title ink">Google OAuth</text>
+  <text x="161" y="497" class="node-copy muted">Verified identity</text>
+  <text x="94" y="530" class="node-copy ink">Auth.js encrypted JWT session</text>
+
+  <!-- Next.js server -->
+  <g filter="url(#shadow)">
+    <rect x="356" y="244" width="266" height="248" rx="28" class="implemented-card"/>
+  </g>
+  <rect x="376" y="264" width="62" height="62" rx="20" fill="#eaf3f8"/>
+  <path d="M389 282h36M389 294h36M389 306h24" class="icon-stroke"/>
+  <text x="456" y="284" class="node-title ink">Next.js application</text>
+  <text x="456" y="307" class="node-copy muted">App Router • Node runtime</text>
+  <line x1="382" y1="346" x2="596" y2="346" stroke="#e2eaee"/>
+  <text x="382" y="374" class="node-copy ink">Auth.js route protection</text>
+  <text x="382" y="398" class="node-copy ink">Streaming multipart limits</text>
+  <text x="382" y="422" class="node-copy ink">PDF signature validation</text>
+  <text x="382" y="446" class="node-copy ink">Idempotent upload orchestration</text>
+  <rect x="524" y="254" width="78" height="20" rx="10" fill="#e8f3ed"/>
+  <text x="537" y="268" class="pill" fill="#3e725d">CURRENT</text>
+
+  <!-- Postgres -->
+  <g filter="url(#shadow)">
+    <rect x="672" y="200" width="180" height="152" rx="24" class="implemented-card"/>
+  </g>
+  <ellipse cx="713" cy="239" rx="26" ry="10" fill="#eaf3f8" stroke="#4d708b" stroke-width="2"/>
+  <path d="M687 239v33c0 6 12 10 26 10s26-4 26-10v-33" class="icon-stroke"/>
+  <path d="M687 255c0 6 12 10 26 10s26-4 26-10" class="icon-stroke"/>
+  <text x="748" y="236" class="node-title ink">PostgreSQL</text>
+  <text x="748" y="258" class="node-copy muted">RDS / Docker</text>
+  <text x="690" y="310" class="node-copy ink">Users • documents • status</text>
+  <text x="690" y="331" class="node-copy ink">uploaded + progress 0</text>
+
+  <!-- S3 -->
+  <g filter="url(#shadow)">
+    <rect x="672" y="428" width="180" height="178" rx="24" class="implemented-card"/>
+  </g>
+  <path d="M691 467h48l-5 38h-38z" fill="#eaf3f8" stroke="#4d708b" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M700 467l4-11h22l4 11" class="icon-stroke"/>
+  <text x="748" y="467" class="node-title ink">Object storage</text>
+  <text x="748" y="489" class="node-copy muted">AWS S3 / MinIO</text>
+  <text x="690" y="535" class="node-copy ink">Private, user-scoped PDF key</text>
+  <text x="690" y="557" class="node-copy ink">SHA-256 • size • versioning</text>
+  <text x="690" y="579" class="node-copy ink">Conditional idempotent writes</text>
+
+  <!-- Current flow edges -->
+  <path d="M296 292 C322 292 330 330 356 330" class="solid-edge"/>
+  <rect x="302" y="290" width="56" height="18" rx="9" fill="#f7fafc"/>
+  <text x="311" y="302.5" class="edge-label" fill="#4d708b">HTTPS</text>
+
+  <path d="M184 364 L184 438" class="solid-edge"/>
+  <text x="194" y="406" class="edge-label" fill="#4d708b">sign in</text>
+  <path d="M296 478 C325 478 329 410 356 410" class="solid-edge"/>
+  <text x="302" y="455" class="edge-label" fill="#4d708b">session</text>
+
+  <path d="M622 303 C642 303 648 276 672 276" class="solid-edge"/>
+  <text x="631" y="281" class="edge-label" fill="#4d708b">row</text>
+  <path d="M622 420 C645 420 646 512 672 512" class="solid-edge"/>
+  <text x="630" y="475" class="edge-label" fill="#4d708b">PDF</text>
+
+  <rect x="72" y="650" width="780" height="128" rx="25" fill="#ffffff" fill-opacity="0.75" stroke="#d8e3e9"/>
+  <circle cx="110" cy="687" r="17" fill="#e8f3ed"/>
+  <path d="M102 687l6 6 11-13" fill="none" stroke="#3e725d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="140" y="687" class="node-title ink">Durable upload boundary</text>
+  <text x="140" y="711" class="node-copy muted">The object is private and versioned. The database row belongs to the authenticated user.</text>
+  <text x="94" y="748" class="node-copy ink">Current persisted state: </text>
+  <rect x="231" y="732" width="83" height="24" rx="12" fill="#e9f2f8"/>
+  <text x="247" y="748" class="pill" fill="#3f6782">UPLOADED</text>
+  <text x="329" y="748" class="node-copy ink">progress 0 • processing starts only after a worker claims the job</text>
+
+  <!-- Planned SQS -->
+  <g>
+    <rect x="952" y="204" width="188" height="110" rx="22" class="planned-card"/>
+    <circle cx="988" cy="243" r="23" fill="#f7ecee"/>
+    <path d="M977 237h22M977 244h22M977 251h14" class="planned-icon"/>
+    <text x="1021" y="239" class="node-title ink">SQS queue</text>
+    <text x="1021" y="261" class="node-copy muted">Document jobs</text>
+    <rect x="1058" y="281" width="64" height="18" rx="9" fill="#f4e3e7"/>
+    <text x="1070" y="294" class="pill" fill="#8f5e6b">PLANNED</text>
+  </g>
+
+  <!-- Planned Lambda -->
+  <g>
+    <rect x="1180" y="204" width="184" height="160" rx="22" class="planned-card"/>
+    <circle cx="1216" cy="243" r="23" fill="#f7ecee"/>
+    <path d="M1209 229l14 14-9 22M1205 256h21" class="planned-icon"/>
+    <text x="1248" y="239" class="node-title ink">Lambda worker</text>
+    <text x="1248" y="261" class="node-copy muted">Queue consumer</text>
+    <text x="1200" y="304" class="node-copy ink">Read PDF • extract text</text>
+    <text x="1200" y="326" class="node-copy ink">Chunk • embed • persist status</text>
+  </g>
+
+  <!-- Planned embedding -->
+  <g>
+    <rect x="1180" y="414" width="184" height="112" rx="22" class="planned-card"/>
+    <circle cx="1216" cy="451" r="22" fill="#f7ecee"/>
+    <path d="M1207 451h18M1216 442v18M1209 444l14 14M1223 444l-14 14" class="planned-icon"/>
+    <text x="1248" y="447" class="node-title ink">Embedding API</text>
+    <text x="1248" y="470" class="node-copy muted">OpenAI / Bedrock</text>
+    <text x="1200" y="503" class="node-copy ink">text-embedding-3-small</text>
+  </g>
+
+  <!-- Planned vector -->
+  <g>
+    <rect x="952" y="414" width="188" height="134" rx="22" class="planned-card"/>
+    <circle cx="988" cy="454" r="22" fill="#f7ecee"/>
+    <circle cx="980" cy="451" r="4" fill="#9a6d79"/>
+    <circle cx="995" cy="443" r="4" fill="#9a6d79"/>
+    <circle cx="997" cy="462" r="4" fill="#9a6d79"/>
+    <path d="M983 449l9-5M984 454l9 6" class="planned-icon"/>
+    <text x="1021" y="450" class="node-title ink">Vector backend</text>
+    <text x="1021" y="473" class="node-copy muted">Decision pending</text>
+    <text x="972" y="511" class="node-copy ink">OpenSearch vs pgvector</text>
+    <text x="972" y="530" class="node-copy muted">Resolved in ticket 08</text>
+  </g>
+
+  <!-- Planned realtime -->
+  <g>
+    <rect x="952" y="602" width="188" height="116" rx="22" class="planned-card"/>
+    <circle cx="988" cy="641" r="22" fill="#f7ecee"/>
+    <path d="M976 645c7-12 18-12 25 0M980 651c5-7 12-7 17 0M988 657h1" class="planned-icon"/>
+    <text x="1021" y="637" class="node-title ink">Socket.io</text>
+    <text x="1021" y="660" class="node-copy muted">User-scoped progress</text>
+    <text x="972" y="694" class="node-copy ink">Reconnect + snapshot sync</text>
+  </g>
+
+  <!-- Planned cold storage -->
+  <g>
+    <rect x="1180" y="602" width="184" height="116" rx="22" class="planned-card"/>
+    <circle cx="1216" cy="641" r="22" fill="#f7ecee"/>
+    <path d="M1208 631v20M1224 631v20M1204 637h24M1204 645h24" class="planned-icon"/>
+    <text x="1248" y="637" class="node-title ink">Cold storage</text>
+    <text x="1248" y="660" class="node-copy muted">S3 Glacier</text>
+    <text x="1200" y="694" class="node-copy ink">Lifecycle after 30 days</text>
+  </g>
+
+  <!-- Planned flow edges -->
+  <path d="M622 280 C770 134 850 182 952 245" class="planned-edge"/>
+  <text x="777" y="170" class="edge-label" fill="#9a6d79">enqueue document ID</text>
+  <path d="M1140 258 L1180 258" class="planned-edge"/>
+  <path d="M1272 364 L1272 414" class="planned-edge"/>
+  <path d="M1180 470 L1140 470" class="planned-edge"/>
+
+  <path d="M852 503 C930 410 1090 375 1180 315" class="planned-edge"/>
+  <text x="1012" y="391" class="edge-label" fill="#9a6d79">read PDF</text>
+  <path d="M1180 350 C1090 383 940 372 852 300" class="planned-edge"/>
+  <text x="1016" y="365" class="edge-label" fill="#9a6d79">status + progress</text>
+
+  <path d="M852 312 C913 382 903 570 952 641" class="planned-edge"/>
+  <text x="876" y="490" class="edge-label" fill="#9a6d79">committed updates</text>
+  <path d="M952 676 C930 810 900 840 840 840 L24 840 L24 306 C24 277 45 272 72 292" class="planned-edge"/>
+  <text x="455" y="858" class="edge-label" fill="#9a6d79">realtime progress to authenticated browser</text>
+
+  <path d="M760 606 C760 770 1130 770 1272 718" class="planned-edge"/>
+  <text x="945" y="761" class="edge-label" fill="#9a6d79">30-day lifecycle</text>
+
+  <text x="940" y="774" class="node-copy muted">Dashed components are ticketed, not simulated in the current UI.</text>
+</svg>
