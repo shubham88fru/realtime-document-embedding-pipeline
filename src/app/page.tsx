@@ -5,6 +5,7 @@ import { signInWithGoogle, signOutCurrentUser } from "@/app/actions/auth";
 import { auth } from "@/auth";
 import { AuthControls } from "@/components/auth/auth-controls";
 import { AppShell } from "@/components/layout/app-shell";
+import { UploadDeck } from "@/components/uploads/upload-deck";
 import {
   Card,
   CardContent,
@@ -13,7 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DocumentStatusPill } from "@/components/ui/document-status-pill";
-import { EmptyState } from "@/components/ui/empty-state";
 import { serverEnv } from "@/lib/env";
 import { formatMegabytes } from "@/lib/format";
 import { DOCUMENT_STATUSES } from "@/types/document";
@@ -56,16 +56,18 @@ export default async function Home() {
             A clear view of every PDF you process.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-            Uploaded documents will stay attached to your account with their
-            stored status and real processing progress.
+            Add PDFs to private object storage. A document appears as uploaded
+            only after storage and database persistence both succeed.
           </p>
 
-          <EmptyState
-            className="mt-10"
-            description="Your uploaded PDFs will appear here with their stored status and processing progress."
-            icon={FileText}
-            title="No documents yet"
-          />
+          <div className="mt-10">
+            <UploadDeck
+              limits={{
+                maxFiles: limits.maxUploadFiles,
+                maxFileSizeBytes: limits.maxFileSizeBytes,
+              }}
+            />
+          </div>
         </section>
 
         <aside className="space-y-5">

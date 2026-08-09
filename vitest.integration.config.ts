@@ -32,6 +32,12 @@ export default defineConfig({
       AUTH_SECRET: "test-auth-secret-with-at-least-32-characters",
       AUTH_GOOGLE_ID: "google-client-id",
       AUTH_GOOGLE_SECRET: "google-client-secret",
+      AWS_REGION: "us-east-1",
+      S3_BUCKET_NAME: "document-embedding-pipeline-test",
+      S3_ENDPOINT: "http://localhost:9000",
+      S3_FORCE_PATH_STYLE: "true",
+      AWS_ACCESS_KEY_ID: "depminio",
+      AWS_SECRET_ACCESS_KEY: "dep_local_storage",
     },
     // Every file shares one database and truncates between cases, so running
     // files in parallel would have them deleting each other's rows.
