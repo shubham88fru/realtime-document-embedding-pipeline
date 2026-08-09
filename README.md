@@ -19,6 +19,15 @@ Tickets 01–04 and 13 are complete. The application foundation, Postgres schema
 Google authentication, Cloudline design system, and authenticated S3 upload
 flow are in place. The queue and embedding pipeline arrive in tickets 05–12.
 
+## Architecture
+
+[![Document Embedding Pipeline architecture showing implemented and planned components](docs/architecture.svg)](docs/architecture.svg)
+
+Solid components are implemented today. Dashed components are the ticketed
+processing path and are not simulated by the current UI. The vector backend
+remains intentionally undecided until ticket 08 resolves the spec's
+OpenSearch-versus-pgvector conflict.
+
 ## Prerequisites
 
 - Node.js 20 or newer (developed against 24)
