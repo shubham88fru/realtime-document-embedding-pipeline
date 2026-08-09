@@ -15,15 +15,15 @@ Work is tracked as numbered tickets under
 
 ## Status
 
-Tickets 01–03 and 13 are complete. The application foundation, Postgres schema,
-Google authentication, and Cloudline design system are in place. Uploads, the
-queue and the embedding pipeline itself arrive in tickets 04–12.
+Tickets 01–04 and 13 are complete. The application foundation, Postgres schema,
+Google authentication, Cloudline design system, and authenticated S3 upload
+flow are in place. The queue and embedding pipeline arrive in tickets 05–12.
 
 ## Prerequisites
 
 - Node.js 20 or newer (developed against 24)
 - npm 10 or newer
-- Docker, for the local Postgres with pgvector
+- Docker, for local Postgres with pgvector and S3-compatible MinIO
 
 ## Setup
 
@@ -49,6 +49,7 @@ docker exec dep-postgres \
 
 npm run db:migrate     # apply migrations
 npm run db:seed        # optional: a dev user and one document per status
+npm run storage:start  # MinIO plus dev/test buckets
 npm run dev
 ```
 
@@ -78,6 +79,30 @@ http://localhost:3000/api/auth/callback/google
 ```
 
 Auth.js rejects Google profiles whose email is not verified.
+
+## Document uploads
+
+The authenticated workspace accepts up to 10 PDFs per selection, 5 MB each.
+Each file is uploaded independently so the browser can report truthful per-file
+transfer progress. A streaming multipart parser enforces the size and part
+limits before buffering more than one configured file. The API validates the
+filename, MIME type, size, and PDF signature again; stores the object under a
+user-scoped key derived from a stable upload UUID; and only then creates the
+document row as `uploaded` with zero processing progress. Retrying the same UUID
+returns the existing document instead of creating duplicates. Request handlers
+never delete stored content while another finalizer may still commit. Verified
+objects without a document row are treated as in-flight for five minutes, then
+the same upload UUID can safely finalize the database row against that object.
+Exact-version deletion remains available for a later reconciled GC/lifecycle
+job.
+
+Local development uses MinIO through the same AWS SDK adapter as production.
+MinIO runs at http://localhost:9000, with its console at
+http://localhost:9001. Local buckets enable versioning so rollback behavior is
+tested against versioned storage. Production should omit `S3_ENDPOINT` and
+static credentials, use an IAM role, and leave `S3_FORCE_PATH_STYLE=false`.
+The SDK default credential chain is left intact, including temporary session
+tokens used by Lambda, STS, and assumed roles.
 
 ## Interface
 
@@ -109,6 +134,8 @@ internal phases are not inferred in the browser.
 | `npm run db:generate`    | Regenerate the Prisma client                |
 | `npm run db:seed`        | Load development data                       |
 | `npm run db:studio`      | Browse the database                         |
+| `npm run storage:start`  | Start MinIO and create dev/test buckets     |
+| `npm run storage:stop`   | Stop local MinIO without deleting its volume|
 
 ## Configuration
 
@@ -166,14 +193,17 @@ npm test -- src/lib/env     # one file
 npm run test:integration    # migrations + database-backed seams
 ```
 
+Integration tests also exercise the S3 adapter and upload route against MinIO,
+so run `npm run storage:start` first.
+
 ## Tech stack
 
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 ·
-shadcn/ui · Manrope + Geist · Auth.js v5 with Google OAuth · PostgreSQL with
-pgvector · Zod · Vitest
+shadcn/ui · Manrope + Geist · Auth.js v5 with Google OAuth · AWS S3 (MinIO
+locally) · PostgreSQL with pgvector · Zod · Vitest
 
-Planned for later tickets: AWS S3 + SQS + Lambda, OpenAI embeddings,
-OpenSearch, Socket.io.
+Planned for later tickets: AWS SQS + Lambda, OpenAI embeddings, OpenSearch,
+Socket.io.
 
 ## Troubleshooting
 

@@ -22,6 +22,8 @@ beforeEach(() => {
   vi.stubEnv("AUTH_SECRET", "test-auth-secret-with-at-least-32-characters");
   vi.stubEnv("AUTH_GOOGLE_ID", "google-client-id");
   vi.stubEnv("AUTH_GOOGLE_SECRET", "google-client-secret");
+  vi.stubEnv("AWS_REGION", "us-east-1");
+  vi.stubEnv("S3_BUCKET_NAME", "document-embedding-pipeline");
 });
 
 afterEach(() => {

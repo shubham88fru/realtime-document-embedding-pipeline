@@ -46,6 +46,13 @@ function positiveInteger(defaultValue: number) {
     .refine((value) => value > 0, { message: "must be greater than zero" });
 }
 
+function booleanString(defaultValue: boolean) {
+  return z
+    .enum(["true", "false"])
+    .default(String(defaultValue) as "true" | "false")
+    .transform((value) => value === "true");
+}
+
 /**
  * Postgres connection strings use either scheme interchangeably; anything else
  * means the wrong engine, which Prisma would only complain about at connect
@@ -70,6 +77,22 @@ const serverEnvSchema = z.object({
   }),
   AUTH_GOOGLE_ID: z.string().min(1, { message: "is required" }),
   AUTH_GOOGLE_SECRET: z.string().min(1, { message: "is required" }),
+  AWS_REGION: z.string().min(1, { message: "is required" }),
+  S3_BUCKET_NAME: z
+    .string()
+    .regex(/^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/, {
+      message: "must be a valid S3 bucket name",
+    }),
+  S3_ENDPOINT: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z
+      .string()
+      .refine(isAbsoluteHttpUrl, {
+        message: "must be an absolute http(s) URL",
+      })
+      .optional(),
+  ),
+  S3_FORCE_PATH_STYLE: booleanString(false),
   MAX_UPLOAD_FILES: positiveInteger(DEFAULT_MAX_UPLOAD_FILES),
   MAX_FILE_SIZE_MB: positiveInteger(DEFAULT_MAX_FILE_SIZE_MB),
   MAX_PROCESSING_CONCURRENCY: positiveInteger(
@@ -104,6 +127,12 @@ export type ServerEnv = {
     secret: string;
     googleClientId: string;
     googleClientSecret: string;
+  };
+  storage: {
+    region: string;
+    bucketName: string;
+    endpoint?: string;
+    forcePathStyle: boolean;
   };
   limits: PipelineLimits;
 };
@@ -145,6 +174,12 @@ export function parseServerEnv(
       secret: parsed.AUTH_SECRET,
       googleClientId: parsed.AUTH_GOOGLE_ID,
       googleClientSecret: parsed.AUTH_GOOGLE_SECRET,
+    },
+    storage: {
+      region: parsed.AWS_REGION,
+      bucketName: parsed.S3_BUCKET_NAME,
+      ...(parsed.S3_ENDPOINT ? { endpoint: parsed.S3_ENDPOINT } : {}),
+      forcePathStyle: parsed.S3_FORCE_PATH_STYLE,
     },
     limits: {
       maxUploadFiles: parsed.MAX_UPLOAD_FILES,

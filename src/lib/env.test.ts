@@ -15,6 +15,8 @@ const validEnv = {
   AUTH_SECRET: "test-auth-secret-with-at-least-32-characters",
   AUTH_GOOGLE_ID: "google-client-id",
   AUTH_GOOGLE_SECRET: "google-client-secret",
+  AWS_REGION: "us-east-1",
+  S3_BUCKET_NAME: "document-embedding-pipeline",
   DATABASE_URL: "postgresql://dep:secret@localhost:5432/dep?schema=public",
 };
 
@@ -59,6 +61,33 @@ describe("parseServerEnv", () => {
       expect(parseServerEnv(validEnv).databaseUrl).toBe(
         "postgresql://dep:secret@localhost:5432/dep?schema=public",
       );
+    });
+
+    describe("object storage", () => {
+      it("exposes the configured AWS region and S3 bucket", () => {
+        expect(parseServerEnv(validEnv).storage).toEqual({
+          region: "us-east-1",
+          bucketName: "document-embedding-pipeline",
+          forcePathStyle: false,
+        });
+      });
+
+      it("supports a local endpoint without overriding the SDK credential chain", () => {
+        expect(
+          parseServerEnv({
+            ...validEnv,
+            S3_ENDPOINT: "http://localhost:9000",
+            S3_FORCE_PATH_STYLE: "true",
+            AWS_ACCESS_KEY_ID: "minioadmin",
+            AWS_SECRET_ACCESS_KEY: "minio-secret",
+          }).storage,
+        ).toEqual({
+          region: "us-east-1",
+          bucketName: "document-embedding-pipeline",
+          endpoint: "http://localhost:9000",
+          forcePathStyle: true,
+        });
+      });
     });
 
     it("accepts both postgres:// and postgresql:// schemes", () => {
@@ -150,7 +179,7 @@ describe("parseServerEnv", () => {
 describe("server/client boundary", () => {
   const envWithSecret = {
     ...validEnv,
-    AWS_SECRET_ACCESS_KEY: "super-secret-value",
+    INTERNAL_API_SECRET: "super-secret-value",
   };
 
   it("refuses to read server configuration in the browser", () => {
@@ -188,6 +217,8 @@ describe("serverEnv", () => {
     vi.stubEnv("AUTH_SECRET", "test-auth-secret-with-at-least-32-characters");
     vi.stubEnv("AUTH_GOOGLE_ID", "google-client-id");
     vi.stubEnv("AUTH_GOOGLE_SECRET", "google-client-secret");
+    vi.stubEnv("AWS_REGION", "us-east-1");
+    vi.stubEnv("S3_BUCKET_NAME", "document-embedding-pipeline");
 
     const first = serverEnv();
 
